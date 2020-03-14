@@ -31,17 +31,20 @@
 	}
 
 	window.requestAnimFrame = function() {
-		return window.requestAnimationFrame ||
-      window.webkitRequestAnimationFrame ||
-      window.mozRequestAnimationFrame ||
-			window.oRequestAnimationFrame ||
-      window.msRequestAnimationFrame ||
-      function(a) {
-        window.setTimeout(a, 1E3/60)
-      }
+		return window.requestAnimationFrame || window.webkitRequestAnimationFrame ||
+			window.mozRequestAnimationFrame || window.oRequestAnimationFrame ||
+			window.msRequestAnimationFrame ||
+			function(a) {
+				window.setTimeout(a, 1E3/60)
+			}
 	} ();
 
-	function drawCell(ctxs, i, j, cds, status, hlighted = false, checked = false, beaten_piece = false) {
+	function drawCell(
+		ctxs, i, j, cds, status,
+		hlighted = false,
+		checked = false,
+		beaten_piece = false
+	) {
 		let ctx = i % 2 == j % 2 ? ctxs[0] : ctxs[1]
 		ctx.beginPath()
 		ctx.moveTo(cds[0][0], cds[0][1])
@@ -50,9 +53,13 @@
 		ctx.lineTo(cds[3][0], cds[3][1])
 		ctx.closePath()
 		if (i % 2 == j % 2) {
-			ctx.fillStyle = hlighted && status != "hold" ? "#aaa23a" : status == "hold" ? "#646f40" : "#b58863"
+			ctx.fillStyle = hlighted && status != "hold" ? "#aaa23a"
+													: status == "hold" ? "#646f40"
+													: "#b58863"
 		} else {
-			ctx.fillStyle = hlighted && status != "hold" ? "#cdd26a" : status == "hold" ? "#829769" : "#f0d9b5"
+			ctx.fillStyle = hlighted && status != "hold" ? "#cdd26a"
+													: status == "hold" ? "#829769"
+													: "#f0d9b5"
 		}
 		if (checked) {
 			ctx.fillStyle = "#e94035"
@@ -85,12 +92,12 @@
 			let curx = x0
 			for (let j = 0; j < 4; j++) {
 				cells_coords[i][j] = [
-          r.rotate(curx, l1.getY(curx)),
-          r.rotate(curx + dx, l1.getY(curx + dx)),
-          r.rotate(curx + dx, l2.getY(curx + dx)),
-          r.rotate(curx, l2.getY(curx)),
-          r.rotate(curx + dx / 2, (l2.getY(curx + dx / 2) + l1.getY(curx + dx / 2)) / 2)
-        ]
+					r.rotate(curx, l1.getY(curx)),
+					r.rotate(curx + dx, l1.getY(curx + dx)),
+					r.rotate(curx + dx, l2.getY(curx + dx)),
+					r.rotate(curx, l2.getY(curx)),
+					r.rotate(curx + dx / 2, (l2.getY(curx + dx / 2) + l1.getY(curx + dx / 2)) / 2)
+				]
 				drawCell(ctx, i, j, cells_coords[i][j])
 				curx += dx
 			}
@@ -110,12 +117,12 @@
 			let curx = x0
 			for (let j = 0; j < 4; j++) {
 				cells_coords[i][j + 4] = [
-          r.rotate(curx, l1.getY(curx)),
-          r.rotate(curx + dx, l1.getY(curx + dx)),
-          r.rotate(curx + dx, l2.getY(curx + dx)),
-          r.rotate(curx, l2.getY(curx)),
-          r.rotate(curx + dx / 2, (l2.getY(curx + dx / 2) + l1.getY(curx + dx / 2)) / 2)
-        ]
+					r.rotate(curx, l1.getY(curx)),
+					r.rotate(curx + dx, l1.getY(curx + dx)),
+					r.rotate(curx + dx, l2.getY(curx + dx)),
+					r.rotate(curx, l2.getY(curx)),
+					r.rotate(curx + dx / 2, (l2.getY(curx + dx / 2) + l1.getY(curx + dx / 2)) / 2)
+				]
 				drawCell(ctx, i, j, cells_coords[i][j + 4])
 				curx += dx
 			}
@@ -147,17 +154,19 @@
 		var chatInput = document.getElementById('chat-input')
 		var chatForm = document.getElementById('chat-form')
 
-		let timers = [document.getElementById("timer1"),
-		document.getElementById("timer2"),
-		document.getElementById("timer3")]
+		let timers = [
+			document.getElementById("timer1"),
+			document.getElementById("timer2"),
+			document.getElementById("timer3")
+		]
 		let move_sound = document.getElementById("move_sound")
 		let capture_sound = document.getElementById("capture_sound")
 		let canvas = document.getElementById("canvas")
 		let ctx = [
-      document.getElementById("layer1").getContext("2d"),
-      document.getElementById("layer2").getContext("2d"),
-      canvas.getContext("2d")
-    ]
+			document.getElementById("layer1").getContext("2d"),
+			document.getElementById("layer2").getContext("2d"),
+			canvas.getContext("2d")
+		]
 		ctx[2].imageSmoothingEnabled = false
 		for (let i = 0; i < ctx.length; i++) {
 			ctx[i].translate(canvas.width / 2, canvas.height / 2)
@@ -207,17 +216,28 @@
 				}
 				reset_lights()
 
-				let reset_cells_status = function() {
+ 
+				let turn_cells_off = function() {
 					for (let s = 0; s < 3; s++) {
 						for (let i = 0; i < 4; i++) {
 							for (let j = 0; j < 8; j++) {
 								board.cells[s][i][j].status = "off"
+							}
+						}
+					}
+				}
+				turn_cells_off()
+
+				let reset_checked_status = function() {
+					for (let s = 0; s < 3; s++) {
+						for (let i = 0; i < 4; i++) {
+							for (let j = 0; j < 8; j++) {
 								board.cells[s][i][j].checked = false
 							}
 						}
 					}
 				}
-				reset_cells_status()
+				reset_checked_status()
 
 				let reset_beaten_status = function() {
 					for (let s = 0; s < 3; s++) {
@@ -274,11 +294,22 @@
 						let cur_side = sbp[s]
 						for (let i = 0; i < 4; i++) {
 							for (let j = 0; j < 8; j++) {
-								drawCell(ctx, i, j, sides[cur_side][i][j], board.cells[s][i][j].status, board.cells[s][i][j].hlighted, board.cells[s][i][j].checked)
+								drawCell(
+									ctx, i, j, sides[cur_side][i][j],
+									board.cells[s][i][j].status,
+									board.cells[s][i][j].hlighted,
+									board.cells[s][i][j].checked
+								)
 								let cds = sides[cur_side][i][j][4]
 								if (board.cells[s][i][j].beaten) {
 									if (board.cells[s][i][j].side != -1) {
-										drawCell(ctx, i, j, sides[cur_side][i][j], board.cells[s][i][j].status, board.cells[s][i][j].hlighted, board.cells[s][i][j].checked, true)
+										drawCell(
+											ctx, i, j, sides[cur_side][i][j],
+											board.cells[s][i][j].status,
+											board.cells[s][i][j].hlighted,
+											board.cells[s][i][j].checked,
+											true
+										)
 									} else {
 										ctx[2].beginPath()
 										let rad =  12
@@ -289,7 +320,12 @@
 
 								}
 								if (board.cells[s][i][j].side != -1) {
-									ctx[2].drawImage(pieces_pack, psz * pieces_offset[board.cells[s][i][j].type.name], psz * board.cells[s][i][j].side, psz, psz, cds[0] - psz / 2, cds[1] - psz / 2, psz, psz)
+									ctx[2].drawImage(
+										pieces_pack,
+										psz * pieces_offset[board.cells[s][i][j].type.name],
+										psz * board.cells[s][i][j].side,
+										psz, psz, cds[0] - psz / 2, cds[1] - psz / 2, psz, psz
+									)
 								}
 							}
 						}
@@ -300,7 +336,8 @@
 				let isInside = function(x, y, corners) {
 					for (let i = 0; i < 4; i++) {
 						let j = (i + 1) % 4;
-						if ((corners[i][0] - x) * (corners[j][1] - y) - (corners[j][0] - x) * (corners[i][1] - y) > 0) {
+						if ((corners[i][0] - x) * (corners[j][1] - y) -
+								(corners[j][0] - x) * (corners[i][1] - y) > 0) {
 							return false
 						}
 					}
@@ -328,15 +365,19 @@
 					let cell = cell_by_coords(x, y)
 					if (cell != null) {
 						if (cell.equals(hold_cell)) {
-							reset_cells_status()
+							turn_cells_off()
 							reset_beaten_status()
 							hold_cell = null
 						} else {
 							if (hold_cell != null) {
-								reset_cells_status()
+								turn_cells_off()
 								reset_beaten_status()
 							}
-							if (hold_cell != null && board.cells[hold_cell[0]][hold_cell[1]][hold_cell[2]].side == my_side && board.cells[cell[0]][cell[1]][cell[2]].side != my_side) {
+							if (
+								hold_cell != null &&
+								board.cells[hold_cell[0]][hold_cell[1]][hold_cell[2]].side == my_side &&
+								board.cells[cell[0]][cell[1]][cell[2]].side != my_side
+							) {
 								socket.emit("make_move", hold_cell, cell)
 								hold_cell = null
 							} else {
@@ -374,7 +415,7 @@
 					let y = e.offsetY - canvas.height / 2
 					let cell = cell_by_coords(x, y)
 					if (hold_cell != null && !hold_cell.equals(cell)) {
-						reset_cells_status()
+						turn_cells_off()
 						reset_beaten_status()
 						socket.emit("make_move", hold_cell, cell)
 						hold_cell = null

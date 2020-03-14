@@ -759,9 +759,6 @@ let process_game = function (q) {
                 if (is_mate()) {
                     console.log("MATE")
                     cur_side_move = 3
-                    for (let q in sockets_list) {
-                        sockets_list[q].emit("game_end")
-                    }
                 } else {
                     cur_side_move = (cur_side_move + 1) % 3
                 }
