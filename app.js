@@ -4,6 +4,39 @@ const serv = require('http').createServer(app)
 const io = require('socket.io')(serv)
 const config = require('./config.js');
 
+// Parse args
+const yargs = require('yargs');
+
+const argv = yargs
+    .option('port', {
+        alias: 'p',
+        description: 'Port to run the server at',
+        type: 'int',
+    })
+    .option('time', {
+        alias: 't',
+        description: 'Time control (minutes)',
+        type: 'float',
+    })
+    .option('additional_time', {
+        alias: 'a',
+        description: 'Time advance per move (seconds)',
+        type: 'int',
+    })
+    .help()
+    .alias('help', 'h')
+    .argv;
+
+if (argv.port) {
+    config.port = argv.port;
+}
+if (argv.time) {
+    config.time = argv.time;
+}
+if (argv.additional_time) {
+    config.additional_time = argv.additional_time;
+}
+
 app.get("/", function (req, res) {
     res.sendFile(__dirname + "/client/index.html")
 })
@@ -353,7 +386,11 @@ let process_game = function (q) {
             }
         }
         if (piece_t1 == "K") {
-            btn_pcs = fwd(c1).concat(bwd(c1).concat(left(c1).concat(right(c1).concat(diag(c1)))))
+            btc_pcs = btn_pcs.concat(fwd(c1))
+            btc_pcs = btn_pcs.concat(bwd(c1))
+            btc_pcs = btn_pcs.concat(left(c1))
+            btc_pcs = btn_pcs.concat(right(c1))
+            btc_pcs = btn_pcs.concat(diag(c1))
             if (include_castling) {
                 if (c1[2] > 1 && is_castling(c1, left(left(c1)[0])[0])) {
                     btn_pcs.push(left(left(c1)[0])[0])
