@@ -8,7 +8,7 @@
     "minimist": ">=1.2.6",
     "nodemon": "^2.0.7",
     "paper": "^0.12.15",
-    "socket.io": "^2.4.1",
+    "socket.io": "^2.5.0",
     "yargs": "^17.0.1"
   },
   "devDependencies": {},
